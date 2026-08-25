@@ -1,0 +1,100 @@
+# ----------------- 
+# ESP-IDF / C / C++
+# -----------------
+
+# ESP-IDF Build Output
+build/
+managed_components/
+
+# ESP-IDF Generated Config Files
+sdkconfig
+sdkconfig.old
+
+# C/C++ Compiled Files
+*.o
+*.obj
+*.elf
+*.bin
+*.map
+*.a
+
+# ---------------------
+# Python / Raspberry Pi
+# ---------------------
+
+# Python Cache
+__pycache__/
+*.py[cod]
+
+# Virtual Environments
+.venv/
+venv/
+env/
+
+# Python Tooling/Cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --------------
+# VS Code / IDE
+# --------------
+
+# Local VS Code Settings
+.vscode/
+
+# Other IDE Files
+.idea/
+
+# ----------------
+# OS Files
+# ----------------
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# -----------------------
+# Project-Generated Data
+# -----------------------
+
+# Logs
+*.log
+logs/
+
+# Temporary Files
+*.tmp
+*.temp
+
+# Large/Generated Audio Files
+data/audio_samples/*.wav
+data/audio_samples/*.pcm
+data/audio_samples/*.raw
+
+# Measurement Outputs
+data/measurements/*.csv
+data/measurements/*.json
+
+# ------------
+# AI Models
+# ------------
+
+# Do NOT Commit Large Downloaded Model Files
+data/models/*
+!data/models/README.md
+
+# Common Model Formats
+*.gguf
+*.tflite
+*.onnx
+
+# --------------------------
+# Secrets / API Credentials
+# --------------------------
+
+.env
+.env.*
+secrets/
+credentials/
+*.pem
+*.key

@@ -1,0 +1,1 @@
+Developing a local-first embedded voice-control system using an ESP32-S3 for edge-AI command recognition, sensing, hardware control, and local/cloud decision routing, with a Raspberry Pi 5 providing local speech-to-text and selective cloud/API access.
