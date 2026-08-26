@@ -3,74 +3,88 @@
 ## Planned Tasks
 
 ### input_task
-Purpose:
+**Purpose:**
 - Monitor manual hardware controls
 - Handle microphone mute and cloud-enable state changes
 - Notify affected system services
-Activation:
+
+**Activation:**
 - GPIO event / task notification or periodic polling
-Priority:
+
+**Priority:**
 - High when active
 
 ### audio_feed_task
-Purpose:
+**Purpose:**
 - Capture PCM audio from the INMP441 through I2S
 - Supply audio frames to the voice-processing pipeline
-Activation:
+
+**Activation:**
 - Continuous while microphone processing is enabled
-Priority:
+
+**Priority:**
 - High
 
 ### voice_ai_task
-Purpose:
+**Purpose:**
 - Run local wake-word and command recognition
 - Generate recognized command/intent events
-Activation:
+
+**Activation:**
 - Audio input / wake event
-Priority:
+
+**Priority:**
 - High
 
 ### command_router_task
-Purpose:
+**Purpose:**
 - Determine whether a command is handled locally, forwarded to the Raspberry Pi,
 forwarded to cloud services, or rejected
-Activation:
+
+**Activation:**
 - Recognized intent/message queue
-Priority:
+
+**Priority:**
 - Medium/High
 
 ### network_task
-Purpose:
+**Purpose:**
 - Manage Wi-Fi and/or higher-level communicaiton
 - Support Pi and cloud/API traffic
-Priority:
+
+**Priority:**
 - Medium
 
 ### sensor_task
-Purpose:
+**Purpose:**
 - Periodically acquire BME280 measurements
-Priority:
+
+**Priority:**
 - Low/Medium
 
 ### lighting_task
-Purpose:
+**Purpose:**
 - Control WS2812B output and system-status lighting
-Priority:
+
+**Priority:**
 - Low/Medium
 
 ### health_task
-Purpose:
+**Purpose:**
 - Monitor system state, errors, memory, and diagnostics
-Priority:
+
+**Priority:**
 - Low
 
 ## ISR Design Rule
 Interrupt service routines will perform only minimal, time-critical work.
-Possible Inclusions:
+
+**Possible Inclusions:**
 - Clear interrupt conditions
 - Capture small amounts of state
 - Notify/unblock FreeRTOS tasks
-Possible Exclusions:
+
+**Possible Exclusions:**
 - Perform AI inference
 - Execute network operations
 - Perform lengthy sensor transactions
