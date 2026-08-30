@@ -15,8 +15,8 @@ Central Hardware Configuration
 #define LED_DATA_GPIO GPIO_NUM_7
 
 // BME280 - I2C - Environmental Sensor
-#define BME280_SDA_GPIO GPIO_NUM_8
-#define BME280_SCL_GPIO GPIO_NUM_9
+#define I2C_SDA_GPIO GPIO_NUM_8
+#define I2C_SCL_GPIO GPIO_NUM_9
 
 // Manual Controls - Toggle Switches
 #define MIC_MUTE_GPIO GPIO_NUM_10

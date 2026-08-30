@@ -1,8 +1,10 @@
 #include "system_manager.h"
+#include "i2c_bus.h"
 
 esp_err_t system_manager_init(void)
 {
     // Initialize system manager resources here
+    ESP_ERROR_CHECK(i2c_bus_init());
     /*
     input_service_init();
     sensor_service_init();
