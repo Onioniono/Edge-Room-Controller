@@ -43,12 +43,12 @@ esp_err_t i2c_bus_init(void)
         .glitch_ignore_cnt = 7,                     // Ignore glitches shorter than 7 clock cycles
         .flags.enable_internal_pullup = true,       // Enable internal pull-up resistors for SDA and SCL lines
     };
-    //return i2c_new_master_bus(&bus_config, &i2c_bus_handle);    // Create a new I2C master bus with the specified configuration and store the handle in i2c_bus_handle
+    return i2c_new_master_bus(&bus_config, &i2c_bus_handle);    // Create a new I2C master bus with the specified configuration and store the handle in i2c_bus_handle
 
     // -------------------------------
     // Scan Bus for connected devices
     // -------------------------------
-    // /*
+    /*
     esp_err_t err = i2c_new_master_bus(&bus_config, &i2c_bus_handle);
     if (err != ESP_OK) {
         return err;
@@ -59,5 +59,13 @@ esp_err_t i2c_bus_init(void)
         return err;
     }
     return ESP_OK;
-    // */
+    */
+}
+
+// --------------------------------
+// Get I2C Bus Handle Function
+// --------------------------------
+i2c_master_bus_handle_t i2c_bus_get_handle(void)
+{
+    return i2c_bus_handle;  // Return the handle for the I2C master bus
 }
