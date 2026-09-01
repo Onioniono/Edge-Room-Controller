@@ -2,6 +2,24 @@
 #include "i2c_bus.h"
 #include "bme280.h"
 
+// ------------------------------
+// System Manager Initialization Function
+/*
+Description:
+This function initializes the system manager.
+- Includes: 
+    - I2C bus initialization
+    - BME280 sensor initialization
+    - Other system services (commented out for now)
+Parameters:
+- None
+Returns:
+- ESP_OK on success, or an appropriate error code on failure.
+Notes:
+- The function uses ESP_ERROR_CHECK to ensure that each initialization step is successful.
+- If any initialization step fails, the function will log the error and return the corresponding error code
+*/
+// ------------------------------
 esp_err_t system_manager_init(void)
 {
     // Initialize system manager resources here
@@ -19,6 +37,20 @@ esp_err_t system_manager_init(void)
     return ESP_OK;
 }
 
+// ------------------------------
+// System Manager Start Function
+/*
+Description:
+This function starts the system manager operations.
+Parameters:
+- None
+Returns:
+- ESP_OK on success, or an appropriate error code on failure.
+Notes:
+- The function uses ESP_ERROR_CHECK to ensure that each start step is successful.
+- If any start step fails, the function will log the error and return the corresponding error code.
+*/
+// ------------------------------
 esp_err_t system_manager_start(void)
 {
     // Start system manager operations here

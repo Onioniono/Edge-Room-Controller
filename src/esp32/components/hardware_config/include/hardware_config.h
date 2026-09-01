@@ -1,10 +1,17 @@
 #pragma once
 #include "driver/gpio.h"
 
+// ------------------------------
+// Hardware Configuration for Edge Room Controller
 /*
-#Edge Room Controller
-Central Hardware Configuration
-*/ 
+Description:
+This header file defines the hardware configuration for the Edge Room Controller, including GPIO pin assignments for various
+peripherals such as the INMP441 microphone, WS2812B RGB LED, BME280 environmental sensor, and manual control switches.
+Notes:
+- The GPIO pin assignments are defined using the ESP32 GPIO numbering scheme.
+- The configuration is intended to be used across the project to ensure consistent hardware access.
+*/
+// ------------------------------
 
 // INMP441 - I2S - Microphone
 #define MIC_BCLK_GPIO GPIO_NUM_4

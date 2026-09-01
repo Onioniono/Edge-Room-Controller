@@ -9,6 +9,18 @@ static i2c_master_bus_handle_t i2c_bus_handle = NULL;   // Handle for the I2C ma
 
 // ----------------------
 // I2C Bus Scan Function
+/*
+Description:
+This function scans the I2C bus for connected devices by probing each possible address in a range.
+Parameters:
+- found_address: A pointer to a uint8_t variable where the address of the first detected device will be stored.
+Returns:
+- ESP_OK if a device is found, or an appropriate error code if no devices are found or if an error occurs during probing.
+Notes:
+- The function iterates through the I2C address range from 0x08 to 0x77, probing each address using the i2c_master_probe function.
+- If a device is found at an address, the function logs the address and stores it in the provided pointer.
+- If no devices are found, the function returns ESP_ERR_NOT_FOUND.
+*/
 // ----------------------
 static esp_err_t i2c_bus_scan(uint8_t *found_address) {
     if (found_address == NULL) {
@@ -32,6 +44,17 @@ static esp_err_t i2c_bus_scan(uint8_t *found_address) {
 
 // --------------------------------
 // I2C Bus Initialization Function
+/*
+Description:
+This function initializes the I2C master bus with a specified configuration, including clock source, GPIO pins for SDA and SCL, glitch filtering, and internal pull-up settings.
+Parameters:
+- None
+Returns:
+- Returns and stores the handle for the I2C master bus in the static variable i2c_bus_handle.
+Notes:
+- The function creates a new I2C master bus using the i2c_new_master_bus function and stores the handle in the static variable i2c_bus_handle.
+- The function also includes commented-out code for scanning the I2C bus for connected devices, which can be enabled if needed.
+*/
 // --------------------------------
 esp_err_t i2c_bus_init(void)
 {
@@ -64,6 +87,16 @@ esp_err_t i2c_bus_init(void)
 
 // --------------------------------
 // Get I2C Bus Handle Function
+/*
+Description:
+This function returns the handle for the I2C master bus.
+Parameters:
+- None
+Returns:
+- The handle for the I2C master bus.
+Notes:
+- Used publicly for other components to access the I2C bus for communication with devices.
+*/
 // --------------------------------
 i2c_master_bus_handle_t i2c_bus_get_handle(void)
 {
