@@ -19,6 +19,7 @@ Notes:
 // ------------------------------
 void app_main(void)
 {
-    ESP_ERROR_CHECK(system_manager_init());
-    ESP_ERROR_CHECK(system_manager_start());
+    ESP_ERROR_CHECK(system_manager_init());     // Initialize the system manager and its components
+    ESP_ERROR_CHECK(system_manager_test());     // Perform a one-shot test of the system manager (Can be commented out if not needed)
+    ESP_ERROR_CHECK(system_manager_start());    // Start the system manager operations, which may include starting various services and components
 }

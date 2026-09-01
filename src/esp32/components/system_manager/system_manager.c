@@ -1,6 +1,9 @@
 #include "system_manager.h"
 #include "i2c_bus.h"
 #include "bme280.h"
+#include "esp_log.h"
+
+static const char *TAG = "SYSTEM_MANAGER";  // Tag for logging
 
 // ------------------------------
 // System Manager Initialization Function
@@ -23,6 +26,7 @@ Notes:
 esp_err_t system_manager_init(void)
 {
     // Initialize system manager resources here
+    ESP_LOGI(TAG, "Initializing system manager...");
     ESP_ERROR_CHECK(i2c_bus_init());
     ESP_ERROR_CHECK(bme280_init());
     /*
@@ -35,6 +39,33 @@ esp_err_t system_manager_init(void)
     pi_link_init();
     */
     return ESP_OK;
+}
+
+// ------------------------------
+// System Manager One-Shot Test Function
+/*
+Description:
+This function performs a one-shot test of the system manager.
+Parameters:
+- None
+Returns:
+- ESP_OK on success, or an appropriate error code on failure.
+Notes:
+- Can be commented out if not needed.
+- Only used for testing purposes to verify that the system manager and its components are functioning correctly.
+- Expected outputs through esp logs in the terminal.
+*/
+// ------------------------------
+esp_err_t system_manager_test(void) {
+    // BME280 sensor test
+    // /*
+    bme280_data_t sensor_data;
+    ESP_ERROR_CHECK(bme280_read(&sensor_data));
+    ESP_LOGI(TAG, "BME280 Readings - Temperature: %.2f C, Pressure: %.2f hPa, Humidity: %.2f %%", 
+             sensor_data.temperature_c, sensor_data.pressure_hpa, sensor_data.humidity_percent);
+
+    return ESP_OK;
+    // */
 }
 
 // ------------------------------
@@ -54,6 +85,7 @@ Notes:
 esp_err_t system_manager_start(void)
 {
     // Start system manager operations here
+    ESP_LOGI(TAG, "Starting system manager...");
     /*
     input_service_start();
     sensor_service_start();
