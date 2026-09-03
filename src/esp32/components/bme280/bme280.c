@@ -259,15 +259,15 @@ esp_err_t bme280_init(void) {
 // BME280 Compensate Temperature Function
 /*
 Description:
-This function compensates the raw BME280 temperature ADC value to obtain temperature in degrees Celsius using the sensor's factory calibration coefficients.
+This function compensates the raw BME280 temperature ADC value to obtain temperature in degrees Fahrenheit using the sensor's factory calibration coefficients.
 Parameters:
 - adc_T: The raw temperature reading from the BME280 sensor (as a 32-bit signed integer).
 Returns:
-- The compensated temperature in degrees Celsius (as a float).
+- The compensated temperature in degrees Fahrenheit (as a float).
 Notes:
 - var1 and var2 are intermediate values defined by Bosch's compensation algorithm.
 - Their sum is stored as t_fine, an intermediate temperature-dependent value required by the pressure and humidity compensation algorithms.
-- The final division by 5120.0 is part of Bosch's floating-point compensation formula and produces temperature in degrees Celsius.
+- The final division by 5120.0 is part of Bosch's floating-point compensation formula and produces temperature in degrees Fahrenheit.
 */
 // ---------------------------------
 static float bme280_compensate_temperature(int32_t adc_T) {
@@ -278,8 +278,9 @@ static float bme280_compensate_temperature(int32_t adc_T) {
     // Store the fine temperature value for pressure and humidity compensation
     t_fine = (int32_t)(var1 + var2);
     // Calculate the actual temperature in degrees Celsius
-    float temp = (var1 + var2) / 5120.0f;
-    return temp;
+    float temp_c = (var1 + var2) / 5120.0f;
+    float temp_f = (temp_c * 9.0f / 5.0f) + 32.0f; // Convert to Fahrenheit
+    return temp_f;
 }
 
 // ---------------------------------
@@ -384,7 +385,7 @@ esp_err_t bme280_read(bme280_data_t *data) {
     uint32_t raw_temperature = ((uint32_t)raw_data[3] << 12) | ((uint32_t)raw_data[4] << 4) | ((uint32_t)(raw_data[5] >> 4));
     uint32_t raw_humidity = ((uint32_t)raw_data[6] << 8) | (uint32_t)raw_data[7];
     // Convert raw values to actual temperature, pressure, and humidity using calibration data
-    data->temperature_c = bme280_compensate_temperature(raw_temperature);
+    data->temperature_f = bme280_compensate_temperature(raw_temperature);
     data->pressure_hpa = bme280_compensate_pressure(raw_pressure);
     data->humidity_percent = bme280_compensate_humidity(raw_humidity);
 

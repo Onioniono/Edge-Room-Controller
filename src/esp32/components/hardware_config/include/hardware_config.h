@@ -22,6 +22,10 @@ Notes:
 #define LED_DATA_GPIO GPIO_NUM_7
 
 // BME280 - I2C - Environmental Sensor
+/*
+Breakout Board Pinout from top to bottom:
+VCC, GND, SCL, SDA, CS, SDO
+*/
 #define I2C_SDA_GPIO GPIO_NUM_8
 #define I2C_SCL_GPIO GPIO_NUM_9
 

@@ -14,7 +14,7 @@ Notes:
 */
 // ------------------------------
 typedef struct {
-    float temperature_c;  // Temperature in degrees Celsius
+    float temperature_f;  // Temperature in degrees Fahrenheit
     float pressure_hpa;   // Pressure in hectopascals
     float humidity_percent; // Humidity in percentage
 } bme280_data_t;

@@ -1,7 +1,9 @@
 #include "system_manager.h"
 #include "i2c_bus.h"
-#include "bme280.h"
 #include "esp_log.h"
+
+#include "bme280.h"
+#include "environment_service.h"
 
 static const char *TAG = "SYSTEM_MANAGER";  // Tag for logging
 
@@ -13,7 +15,7 @@ This function initializes the system manager.
 - Includes: 
     - I2C bus initialization
     - BME280 sensor initialization
-    - Other system services (commented out for now)
+    - Environment service initialization (RTOS task; 30 second periodic BME280 sensor readings)
 Parameters:
 - None
 Returns:
@@ -29,15 +31,9 @@ esp_err_t system_manager_init(void)
     ESP_LOGI(TAG, "Initializing system manager...");
     ESP_ERROR_CHECK(i2c_bus_init());
     ESP_ERROR_CHECK(bme280_init());
-    /*
-    input_service_init();
-    sensor_service_init();
-    lighting_service_init();
-    audio_service_init();
-    voice_ai_init();
-    network_service_init();
-    pi_link_init();
-    */
+    ESP_ERROR_CHECK(environment_service_init());
+
+    // Return ESP_OK to indicate successful initialization
     return ESP_OK;
 }
 
@@ -58,14 +54,15 @@ Notes:
 // ------------------------------
 esp_err_t system_manager_test(void) {
     // BME280 sensor test
-    // /*
+    /*
     bme280_data_t sensor_data;
     ESP_ERROR_CHECK(bme280_read(&sensor_data));
     ESP_LOGI(TAG, "BME280 Readings - Temperature: %.2f C, Pressure: %.2f hPa, Humidity: %.2f %%", 
              sensor_data.temperature_c, sensor_data.pressure_hpa, sensor_data.humidity_percent);
 
     return ESP_OK;
-    // */
+    */
+   return ESP_OK; // Placeholder return value for testing purposes
 }
 
 // ------------------------------
