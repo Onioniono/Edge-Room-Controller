@@ -45,10 +45,10 @@ static void environment_task(void *arg) {
 }
 
 // ------------------------------
-// Environment Service Initialization Function
+// Environment Service Start Function
 /*
 Description:
-This function initializes the environment service by creating a FreeRTOS task that periodically 
+This function starts the environment service by creating a FreeRTOS task that periodically 
 reads data from the BME280 sensor and logs the temperature, pressure, and humidity values.
 Parameters:
 - None
@@ -59,7 +59,7 @@ Notes:
 - The task runs indefinitely, reading sensor data every ENVIRONMENT_TASK_PERIOD_MS milliseconds.
 */
 // ------------------------------
-esp_err_t environment_service_init(void) {
+esp_err_t environment_service_start(void) {
     BaseType_t result = xTaskCreate(environment_task, "environment_task", ENVIRONMENT_TASK_STACK_SIZE, NULL, ENVIRONMENT_TASK_PRIORITY, NULL);
     if (result != pdPASS) {
         ESP_LOGE(TAG, "Failed to create environment task");
