@@ -121,6 +121,15 @@ esp_err_t system_manager_test(void) {
 
         ESP_ERROR_CHECK(ws2812_clear());    // All LED off
         ESP_ERROR_CHECK(ws2812_show());
+
+        ESP_ERROR_CHECK(ws2812_set_pixel(0,128,0,255));     // Purple
+        ESP_ERROR_CHECK(ws2812_set_pixel(1,255,80,0));      // Orange
+        ESP_ERROR_CHECK(ws2812_set_pixel(2,0,255,255));     // Cyan
+        ESP_ERROR_CHECK(ws2812_show());
+        vTaskDelay(pdMS_TO_TICKS(10000));
+
+        ESP_ERROR_CHECK(ws2812_clear());    // All LED off
+        ESP_ERROR_CHECK(ws2812_show());
     #endif
 
    return ESP_OK; // Placeholder return value for testing purposes
