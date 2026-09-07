@@ -188,3 +188,24 @@ esp_err_t ws2812_clear(void) {
     memset(pixel_buffer,0,sizeof(pixel_buffer));
     return ESP_OK;
 }
+
+// -----------------------------------------
+// Apply values to all the LEDs
+/*
+Description:
+Set every LED in the buffer to defined RGB values
+Parameters:
+- red, green, blue: 0-255 values to define color
+Returns:
+- ESP_OK on success, or an appropriate error code on failure.
+*/
+// -----------------------------------------
+esp_err_t ws2812_set_all(uint8_t red,uint8_t green,uint8_t blue) {
+    for (uint16_t i = 0; i < WS2812_LED_COUNT; i++) {
+        esp_err_t err = ws2812_set_pixel(i, red, green, blue);
+        if (err != ESP_OK) {
+            return err;
+        }
+    }
+    return ESP_OK;
+}

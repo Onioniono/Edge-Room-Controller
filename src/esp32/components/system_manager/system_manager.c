@@ -9,6 +9,7 @@
 #include "bme280.h"
 #include "environment_service.h"
 #include "ws2812.h"
+#include "lighting_service.h"
 
 static const char *TAG = "SYSTEM_MANAGER";  // Tag for logging
 
@@ -130,6 +131,19 @@ esp_err_t system_manager_test(void) {
 
         ESP_ERROR_CHECK(ws2812_clear());    // All LED off
         ESP_ERROR_CHECK(ws2812_show());
+    #endif
+
+    // lighting_service test
+    #if TEST_LIGHTING_SERVICE
+            lighting_set_color(128, 0, 255);    // purple base
+            vTaskDelay(pdMS_TO_TICKS(5000));
+            lighting_set_brightness(10);        // dim LED
+            vTaskDelay(pdMS_TO_TICKS(5000));
+            lighting_override_begin(LIGHTING_MODE_LISTENING);
+            vTaskDelay(pdMS_TO_TICKS(5000));
+            lighting_override_end();
+            vTaskDelay(pdMS_TO_TICKS(5000));
+            lighting_off();
     #endif
 
    return ESP_OK; // Placeholder return value for testing purposes

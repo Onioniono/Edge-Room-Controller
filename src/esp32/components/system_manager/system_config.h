@@ -6,6 +6,6 @@
 #define ENABLE_WS2812E 1
 
 // Test Cases
-#define TEST_I2C_BUS 0
 #define TEST_BME280 0
-#define TEST_WS2812 1
+#define TEST_WS2812 0
+#define TEST_LIGHTING_SERVICE 1
