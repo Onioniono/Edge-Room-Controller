@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include "esp_err.h"
+#include "esp_log.h"
 
 // ------------------------------
 // Contains different lighting mode styles for WS2812 LEDs

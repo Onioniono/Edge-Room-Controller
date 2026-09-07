@@ -182,30 +182,51 @@ static esp_err_t lighting_apply_state(void) {
 // ############################################################################################## //
 
 // ------------------------------------
-// Change mode to a preset mode
+// Change base/default mode to a preset mode
 // ------------------------------------
 esp_err_t lighting_set_mode(lighting_mode_t mode) {
     // Verify requested mode exists
     if (mode < LIGHTING_MODE_OFF || mode > LIGHTING_MODE_CUSTOM) {
         return ESP_ERR_INVALID_ARG;
     }
-    // Set Mode
-    lighting_state.base_mode = mode;
-    return lighting_apply_state();
+    // Verify queue exists
+    if (lighting_queue == NULL) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    // Add request to queue
+    lighting_command_t command = {
+        .type = LIGHTING_CMD_SET_MODE,
+        .mode = mode
+    };
+    // Failssafe
+    if (xQueueSend(lighting_queue, &command, pdMS_TO_TICKS(100)) != pdTRUE) {
+        return ESP_ERR_TIMEOUT;
+    }
+    // Return
+    return ESP_OK;
 }
 
 // ------------------------------------
 // Change LED colors to a custom static color
 // ------------------------------------
 esp_err_t lighting_set_color(uint8_t red, uint8_t green, uint8_t blue) {
-    // Change color variables to custom inputs
-    lighting_state.custom_red = red;
-    lighting_state.custom_green = green;
-    lighting_state.custom_blue = blue;
-    // Change Mode to Custom
-    lighting_state.base_mode = LIGHTING_MODE_CUSTOM;
-    // Apply new state and colors
-    return lighting_apply_state();
+    // Verify queue exists
+    if (lighting_queue == NULL) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    // Add request to queue
+    lighting_command_t command = {
+        .type = LIGHTING_CMD_SET_COLOR,
+        .red = red,
+        .green = green,
+        .blue = blue
+    };
+    // Failssafe
+    if (xQueueSend(lighting_queue, &command, pdMS_TO_TICKS(100)) != pdTRUE) {
+        return ESP_ERR_TIMEOUT;
+    }
+    // Return
+    return ESP_OK;
 }
 
 // ------------------------------------
@@ -216,9 +237,21 @@ esp_err_t lighting_set_brightness(uint8_t brightness_percent) {
     if (brightness_percent > 100) {
         return ESP_ERR_INVALID_ARG;
     }
-    // Apply brightness
-    lighting_state.brightness_percent = brightness_percent;
-    return lighting_apply_state();
+    // Verify queue exists
+    if (lighting_queue == NULL) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    // Add request to queue
+    lighting_command_t command = {
+        .type = LIGHTING_CMD_SET_BRIGHTNESS,
+        .brightness_percent = brightness_percent
+    };
+    // Failssafe
+    if (xQueueSend(lighting_queue, &command, pdMS_TO_TICKS(100)) != pdTRUE) {
+        return ESP_ERR_TIMEOUT;
+    }
+    // Return
+    return ESP_OK;
 }
 
 // ------------------------------------
@@ -229,25 +262,61 @@ esp_err_t lighting_override_begin(lighting_mode_t mode) {
     if (mode < LIGHTING_MODE_OFF || mode > LIGHTING_MODE_CUSTOM) {
         return ESP_ERR_INVALID_ARG;
     }
-    // Change to Override Mode
-    lighting_state.override_mode = mode;
-    lighting_state.override_active = true;
-    return lighting_apply_state();
+    // Verify queue exists
+    if (lighting_queue == NULL) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    // Add request to queue
+    lighting_command_t command = {
+        .type = LIGHTING_CMD_OVERRIDE_BEGIN,
+        .mode = mode
+    };
+    // Failsafe
+    if (xQueueSend(lighting_queue, &command, pdMS_TO_TICKS(100)) != pdTRUE) {
+        return ESP_ERR_TIMEOUT;
+    }
+    // Return
+    return ESP_OK;
 }
 
 // ------------------------------------
 // End Override of lighting
 // ------------------------------------
 esp_err_t lighting_override_end(void) {
-    lighting_state.override_active = false;
-    return lighting_apply_state();
+    // Verify queue exists
+    if (lighting_queue == NULL) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    // Add request to queue
+    lighting_command_t command = {
+        .type = LIGHTING_CMD_OVERRIDE_END,
+    };
+    // Failsafe
+    if (xQueueSend(lighting_queue, &command, pdMS_TO_TICKS(100)) != pdTRUE) {
+        return ESP_ERR_TIMEOUT;
+    }
+    // Return
+    return ESP_OK;
 }
 
 // ------------------------------------
 // Turn off LED lighting
 // ------------------------------------
 esp_err_t lighting_off(void) {
-    return lighting_set_mode(LIGHTING_MODE_OFF);
+    // Verify queue exists
+    if (lighting_queue == NULL) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    // Add request to queue
+    lighting_command_t command = {
+        .type = LIGHTING_CMD_OFF
+    };
+    // Failsafe
+    if (xQueueSend(lighting_queue, &command, pdMS_TO_TICKS(100)) != pdTRUE) {
+        return ESP_ERR_TIMEOUT;
+    }
+    // Return
+    return ESP_OK;
 }
 
 // ############################################################################################## //
@@ -263,6 +332,7 @@ static void lighting_task(void *arg) {
     while (1) {
         // Wait indefientely until a lighting commend is sent
         if (xQueueReceive(lighting_queue, &command, portMAX_DELAY) == pdTRUE) {
+            ESP_LOGI(TAG, "Received lighting command: %d", command.type);
             switch (command.type) {
                 case LIGHTING_CMD_SET_MODE:
                     lighting_state.base_mode = command.mode;

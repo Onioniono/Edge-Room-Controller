@@ -79,6 +79,9 @@ esp_err_t system_manager_start(void)
         ESP_ERROR_CHECK(environment_service_start());
     #endif
 
+    #if ENABLE_WS2812E
+        ESP_ERROR_CHECK(lighting_service_start());
+    #endif
     // Return ESP_OK to indicate successful start
     return ESP_OK;
 }
@@ -98,6 +101,9 @@ Notes:
 */
 // ------------------------------
 esp_err_t system_manager_test(void) {
+    // Start system manager operations here
+    ESP_LOGI(TAG, "Starting system one-shot test(s)...");
+    
     // BME280 sensor test
     #if TEST_BME280
         bme280_data_t sensor_data;
@@ -136,13 +142,20 @@ esp_err_t system_manager_test(void) {
     // lighting_service test
     #if TEST_LIGHTING_SERVICE
             lighting_set_color(128, 0, 255);    // purple base
-            vTaskDelay(pdMS_TO_TICKS(5000));
+            vTaskDelay(pdMS_TO_TICKS(3000));
             lighting_set_brightness(10);        // dim LED
-            vTaskDelay(pdMS_TO_TICKS(5000));
-            lighting_override_begin(LIGHTING_MODE_LISTENING);
-            vTaskDelay(pdMS_TO_TICKS(5000));
+            vTaskDelay(pdMS_TO_TICKS(3000));
+            lighting_set_mode(LIGHTING_MODE_ERROR);
+            vTaskDelay(pdMS_TO_TICKS(3000));
+            lighting_set_mode(LIGHTING_MODE_PROCESSING);
+            vTaskDelay(pdMS_TO_TICKS(3000));
+            lighting_set_mode(LIGHTING_MODE_IDLE);
+            vTaskDelay(pdMS_TO_TICKS(3000));
+            lighting_set_mode(LIGHTING_MODE_LISTENING);
+            vTaskDelay(pdMS_TO_TICKS(3000));
+            lighting_override_begin(LIGHTING_MODE_IDLE);
+            vTaskDelay(pdMS_TO_TICKS(3000));
             lighting_override_end();
-            vTaskDelay(pdMS_TO_TICKS(5000));
             lighting_off();
     #endif
 
