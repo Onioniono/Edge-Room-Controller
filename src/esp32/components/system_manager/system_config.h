@@ -4,6 +4,7 @@
 #define ENABLE_I2C_BUS 1
 #define ENABLE_BME280 0
 #define ENABLE_WS2812E 0
+#define ENABLE_INPUT_SWITCHES 1
 
 // Test Cases
 #define TEST_BME280 0

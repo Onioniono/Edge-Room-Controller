@@ -1,15 +1,16 @@
 #include "system_manager.h"
-#include "i2c_bus.h"
 #include "system_config.h"
 
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#include "i2c_bus.h"
 #include "bme280.h"
 #include "environment_service.h"
 #include "ws2812.h"
 #include "lighting_service.h"
+#include "input_service.h"
 
 static const char *TAG = "SYSTEM_MANAGER";  // Tag for logging
 
@@ -78,10 +79,15 @@ esp_err_t system_manager_start(void)
     #if ENABLE_BME280
         ESP_ERROR_CHECK(environment_service_start());
     #endif
-
+    // Start lighting service if WS2812E is enabled
     #if ENABLE_WS2812E
         ESP_ERROR_CHECK(lighting_service_start());
     #endif
+    // Start input service if input switches is enabled
+    #if ENABLE_INPUT_SWITCHES
+        ESP_ERROR_CHECK(input_service_start());
+    #endif
+
     // Return ESP_OK to indicate successful start
     return ESP_OK;
 }
