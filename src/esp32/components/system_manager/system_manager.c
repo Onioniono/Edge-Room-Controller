@@ -33,6 +33,19 @@ typedef struct {
 static system_state_t system_state;
 
 // ############################################################################################## //
+// PRIVATE FUNCTIONS
+// ############################################################################################## //
+
+static esp_err_t system_manager_input_acknowledgement(void) {
+    // Temporarily indicate that a physical input was accepted
+    esp_err_t err = lighting_temporary_override(LIGHTING_MODE_ACKNOWLEDGEMENT, 500);
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "Failed to acknowledge input with lighting service");
+    }
+    return ESP_OK;
+}
+
+// ############################################################################################## //
 // RTOS FUNCTIONS
 // ############################################################################################## //
 
@@ -265,19 +278,6 @@ esp_err_t system_manager_send_event(system_event_type_t type, bool state) {
     // Send the event to the system-manager queue
     if (xQueueSend(system_queue, &event, pdMS_TO_TICKS(100)) != pdTRUE) {
         return ESP_ERR_TIMEOUT;
-    }
-    return ESP_OK;
-}
-
-// ############################################################################################## //
-// PRIVATE FUNCTIONS
-// ############################################################################################## //
-
-static esp_err_t system_manager_input_acknowledgement(void) {
-    // Temporarily indicate that a physical input was accepted
-    esp_err_t err = lighting_temporary_override(LIGHTING_MODE_ACKNOWLEDGEMENT, 500);
-    if (err != ESP_OK) {
-        ESP_LOGW(TAG, "Failed to acknowledge input with lighting service");
     }
     return ESP_OK;
 }

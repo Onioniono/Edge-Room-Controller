@@ -352,6 +352,13 @@ esp_err_t lighting_temporary_override(lighting_mode_t mode, uint32_t duration_ms
         .mode = mode,
         .duration_ms = duration_ms
     };
+
+    // Send request to lighitng task
+    if (xQueueSend(lighting_queue, &command, pdMS_TO_TICKS(100)) != pdTRUE) {
+        return ESP_ERR_TIMEOUT;
+    }
+
+    return ESP_OK;
 }
 
 // ############################################################################################## //
