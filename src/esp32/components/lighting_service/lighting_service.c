@@ -36,15 +36,6 @@ static lighting_state_t lighting_state = {
     .custom_blue = 0
 };
 
-// Contains public variables for requested RTOS queue-based commands
-typedef enum {
-    LIGHTING_CMD_SET_MODE,
-    LIGHTING_CMD_SET_COLOR,
-    LIGHTING_CMD_SET_BRIGHTNESS,
-    LIGHTING_CMD_OVERRIDE_BEGIN,
-    LIGHTING_CMD_OVERRIDE_END,
-    LIGHTING_CMD_OFF
-} lighting_command_type_t;
 typedef struct {
     lighting_command_type_t type;
     lighting_mode_t mode;
@@ -54,6 +45,8 @@ typedef struct {
     uint8_t blue;
 
     uint8_t brightness_percent;
+    
+    uint32_t duration_ms;
 } lighting_command_t;
 
 static QueueHandle_t lighting_queue = NULL;     // Private Queue Handle
@@ -138,6 +131,12 @@ static esp_err_t lighting_apply_mode(lighting_mode_t mode) {
             green = 0;
             blue = 0;
             break;
+        case LIGHTING_MODE_ACKNOWLEDGEMENT:
+            // Yellow
+            red = 128;
+            green = 105;
+            blue = 30;
+            break;
         case LIGHTING_MODE_CUSTOM:
             red = lighting_state.custom_red;
             green = lighting_state.custom_green;
@@ -175,6 +174,26 @@ static esp_err_t lighting_apply_state(void) {
         return lighting_apply_mode(lighting_state.override_mode);
     }
     return lighting_apply_mode(lighting_state.base_mode);
+}
+
+// -------------------------------------------
+// Verifies lighting_apply_state();
+/*
+Description:
+This function verifies lighting_apply_state worked correctly.
+Parameters:
+- None
+Returns:
+- None
+Notes:
+- Exists due to some commands requiring multiple uses of lighting_apply_state
+*/
+// -------------------------------------------
+static void lighting_apply_state_verify(void) {
+    esp_err_t err = lighting_apply_state();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to apply lighitng state: %s", esp_err_to_name(err));
+    }
 }
 
 // ############################################################################################## //
@@ -319,6 +338,22 @@ esp_err_t lighting_off(void) {
     return ESP_OK;
 }
 
+// ------------------------------------
+// Temporarily Override Lighting for a Set Duration
+// ------------------------------------
+
+esp_err_t lighting_temporary_override(lighting_mode_t mode, uint32_t duration_ms) {
+    if (lighting_queue == NULL) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    // Add request to queue
+    lighting_command_t command = {
+        .type = LIGHTING_CMD_TEMPORARY_OVERRIDE,
+        .mode = mode,
+        .duration_ms = duration_ms
+    };
+}
+
 // ############################################################################################## //
 // RTOS FUNCTIONS
 // ############################################################################################## //
@@ -362,15 +397,23 @@ static void lighting_task(void *arg) {
                     lighting_state.base_mode = LIGHTING_MODE_OFF;
                     break;
                 
+                case LIGHTING_CMD_TEMPORARY_OVERRIDE:
+                    lighting_state.override_mode = command.mode;
+                    lighting_state.override_active = true;
+                    // Apply temporary override immediately
+                    lighting_apply_state_verify();
+                    // Delay for a set duration
+                    vTaskDelay(command.duration_ms);
+                    // Disable override
+                    lighting_state.override_active = false;
+                    break;
+                
                 default:
                     ESP_LOGW(TAG, "Unkown ligthing command");
                     continue;    
             }
             // Apply new state
-            esp_err_t err = lighting_apply_state();
-            if (err != ESP_OK) {
-                ESP_LOGE(TAG, "Failed to apply lighting state: %s", esp_err_to_name(err));
-            }
+            lighting_apply_state_verify();
         }
     }
 }

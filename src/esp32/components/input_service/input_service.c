@@ -1,5 +1,6 @@
 #include "input_service.h"
 #include "hardware_config.h"
+#include "system_manager.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -100,6 +101,7 @@ static void input_process_switch(gpio_num_t gpio, input_switch_t *switch_state) 
                 } else {
                     ESP_LOGI(TAG, "Microphone DISABLED");
                 }
+                system_manager_send_event(SYSTEM_EVENT_MIC_MUTE_CHANGED, switch_state->current_state);
                 break;
             case INPUT_SWITCH_CLOUD_ENABLE:
                 if (switch_state->current_state) {
@@ -107,6 +109,7 @@ static void input_process_switch(gpio_num_t gpio, input_switch_t *switch_state) 
                 } else {
                     ESP_LOGI(TAG, "Cloud DISABLED");
                 }
+                system_manager_send_event(SYSTEM_EVENT_CLOUD_ENABLE_CHANGED, switch_state->current_state);
                 break;
             default:
                 ESP_LOGW(TAG, "Unknown Input Device Change");
