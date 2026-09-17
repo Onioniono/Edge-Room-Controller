@@ -134,8 +134,8 @@ static esp_err_t lighting_apply_mode(lighting_mode_t mode) {
         case LIGHTING_MODE_ACKNOWLEDGEMENT:
             // Yellow
             red = 128;
-            green = 105;
-            blue = 30;
+            green = 70;
+            blue = 5;
             break;
         case LIGHTING_MODE_CUSTOM:
             red = lighting_state.custom_red;
@@ -410,7 +410,7 @@ static void lighting_task(void *arg) {
                     // Apply temporary override immediately
                     lighting_apply_state_verify();
                     // Delay for a set duration
-                    vTaskDelay(command.duration_ms);
+                    vTaskDelay(pdMS_TO_TICKS(command.duration_ms));
                     // Disable override
                     lighting_state.override_active = false;
                     break;
