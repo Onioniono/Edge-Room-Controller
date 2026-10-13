@@ -14,9 +14,9 @@ Notes:
 // ------------------------------
 
 // INMP441 - I2S - Microphone
-#define MIC_BCLK_GPIO GPIO_NUM_4
-#define MIC_WS_GPIO GPIO_NUM_5
-#define MIC_DATA_GPIO GPIO_NUM_6
+#define I2S_BCLK_GPIO GPIO_NUM_4
+#define I2S_WS_GPIO GPIO_NUM_5
+#define I2S_SD_GPIO GPIO_NUM_6
 
 // WS2812B - RGB LED
 #define LED_DATA_GPIO GPIO_NUM_7
