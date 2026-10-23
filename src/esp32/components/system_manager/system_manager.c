@@ -12,6 +12,12 @@
 #include "lighting_service.h"
 #include "input_service.h"
 
+/************************* 
+Purpose: 
+Initialize and manage system-wide services.
+Coordinate system-wide states such as muted, idle, and listening.
+*************************/
+
 static const char *TAG = "SYSTEM_MANAGER";  // Tag for logging
 static QueueHandle_t system_queue = NULL;     // Private Queue Handle
 #define SYSTEM_MANAGER_TASK_STACK_SIZE 3072
@@ -129,6 +135,11 @@ esp_err_t system_manager_init(void)
     // Initialize Light WS2812B if enabled
     #if ENABLE_WS2812E
         ESP_ERROR_CHECK(ws2812_init());
+    #endif
+
+    // Initialize the I2S bus
+    #if ENABLE_I2S_BUS
+        ESP_ERROR_CHECK(i2s_bus_init());
     #endif
 
     // Return ESP_OK to indicate successful initialization

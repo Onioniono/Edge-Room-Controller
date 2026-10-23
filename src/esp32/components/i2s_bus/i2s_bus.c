@@ -2,6 +2,11 @@
 #include "driver/i2s_std.h"
 #include "hardware_config.h"
 
+/************************* 
+Purpose: 
+Configure I²S hardware, manage the RX channel, expose raw audio reads
+*************************/
+
 #define I2S_SAMPLE_RATE_HZ 16000
 static i2s_chan_handle_t rx_handle = NULL; // Persistent handle for the I2S RX channel, used for reading audio data from the I2S bus
 
