@@ -3,7 +3,7 @@
 #include "hardware_config.h"
 
 #define I2S_SAMPLE_RATE_HZ 16000
-static i2s_chan_handle_t rx_handle = NULL;
+static i2s_chan_handle_t rx_handle = NULL; // Persistent handle for the I2S RX channel, used for reading audio data from the I2S bus
 
 // ############################################################################################## //
 // PUBLIC FUNCTIONS
@@ -25,7 +25,7 @@ Notes:
 // ----------------------------------------
 esp_err_t i2s_bus_init(void) {
     esp_err_t err;
-    // COnfigure I2S channel (which I2S controller, DMA buffer count, DMA frame size, etc.)
+    // Configure I2S channel (which I2S controller, DMA buffer count, DMA frame size, etc.)
         // Use default configuration for I2S channel:
             // Note: I2S_NUM_AUTO allows the driver to automatically select an available I2S peripheral
             // Note: I2S_ROLE_MASTER configures the ESP32 as the master device, generating the clock signals for the I2S bus
@@ -37,10 +37,10 @@ esp_err_t i2s_bus_init(void) {
     if (err != ESP_OK) {
         return err;
     }
-        // Configure I2S Standard Mode
+    // Configure I2S Standard Mode
     i2s_std_config_t std_config = {
-            // Physical ESP32 GPIO pins
-                // Where the signals are physically connected
+        // Physical ESP32 GPIO pins
+            // Where the signals are physically connected
         .gpio_cfg = {
             .mclk = I2S_GPIO_UNUSED,
             .bclk = I2S_BCLK_GPIO,
@@ -48,21 +48,21 @@ esp_err_t i2s_bus_init(void) {
             .dout = I2S_GPIO_UNUSED,
             .din = I2S_SD_GPIO
         },
-            // Audio clock configuration (sample rate, clock source, etc.)
-                // When the signals are transmitted
+        // Audio clock configuration (sample rate, clock source, etc.)
+            // When the signals are transmitted
         .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(I2S_SAMPLE_RATE_HZ),  // Set sample rate to 16 kHz
-            // Audio data/slot configuration (sample width, left/right channel, etc.)
-                // How the data bits are organized
-                    // Note: INMP441 outputs 24-bit audio data; WakeNet/ESP-SR expects 16-bit audio data
-                        // Audio Service Directory: Convert 24-bit signed audio to 16-bit signed PCM audio data
+        // Audio data/slot configuration (sample width, left/right channel, etc.)
+            // How the data bits are organized
+                // Note: INMP441 outputs 24-bit audio data; WakeNet/ESP-SR expects 16-bit audio data
+                    // Audio Service Directory: Convert 24-bit signed audio to 16-bit signed PCM audio data
         .slot_cfg = I2S_STD_PHILIP_SLOT_DEFAULT_CONFIG(32, 2)  // Set sample width to 32 bits and 2 channels (stereo)
     };
-        // Apply Standard-Mode Configuratoin
+    // Apply Standard-Mode Configuratoin
     err = i2s_channel_init_std_mode(rx_handle, &std_config);
     if (err != ESP_OK) {
         return err;
     }
-        // Enable I2S RX Channel
+    // Enable I2S RX Channel
     err = i2s_channel_enable(rx_handle);
     if (err != ESP_OK) {
         return err;
@@ -105,16 +105,31 @@ esp_err_t i2s_bus_deinit(void) {
 Description:
 This function reads audio data from the I2S bus into the provided destination buffer.
 Parameters:
-- currently n/a
+- buffer: Pointer to the destination buffer where the audio data will be stored.
+- requested_bytes: The number of bytes to read from the I2S bus.
+- bytes_read: Pointer to a variable where the actual number of bytes read will be stored.
+- timeout_ms: The maximum time to wait for data to be available, in milliseconds.
 Returns:
-- currently n/a
-Notes:
-- currently n/a
+- ESP_OK if successful, or an appropriate error code if failed.
 */
 // ----------------------------------------
-esp_err_t i2s_bus_read(
-    /* destination buffer */
-    /* number of bytes requested */
-    /* number of bytes actually received */
-    /* timeout */
-);
+esp_err_t i2s_bus_read(void *buffer, size_t requested_bytes, size_t *bytes_read, uint32_t timeout_ms) {
+    // Verify RX channel initialized
+    if (rx_handle == NULL) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    // Vallidate input parameters
+    if (buffer == NULL || requested_bytes == 0 || bytes_read == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    // Initialize output before reading
+    *bytes_read = 0;
+    // Request audio data from I2S driver's DMA-managed buffers
+    esp_err_t err = i2s_channel_read(rx_handle, buffer, requested_bytes, bytes_read, timeout_ms);
+    if (err != ESP_OK) {
+        return err;
+    }
+
+    return ESP_OK;
+}
