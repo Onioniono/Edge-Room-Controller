@@ -1,6 +1,7 @@
 #pragma once
 
 #include "esp_err.h"
+#include "esp_log.h"
 #include "stdbool.h"
 
 esp_err_t audio_service_init(void);     // Initialize auudio service resources
